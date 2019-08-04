@@ -60,11 +60,11 @@ public class DataStreamWithFieldExpressions {
 
 
     /**
-     * 15:47:26,646 INFO  org.apache.flink.api.java.typeutils.TypeExtractor             - Class org.ximo.finkinaction.java.basicapiconcepts.DataStreamWithFieldExpressions$WordCount is not public so it cannot be used as a POJO type and must be processed as GenericType. Please read the Flink documentation on "Data Types & Serialization" for details of the effect on performance.
-     * Exception in thread "main" org.apache.flink.api.common.InvalidProgramException: This type (GenericType<org.ximo.finkinaction.java.basicapiconcepts.DataStreamWithFieldExpressions.WordCount>) cannot be used as key.
+     * 15:47:26,646 INFO  org.apache.flink.api.java.typeutils.TypeExtractor             - Class DataStreamWithFieldExpressions$WordCount is not public so it cannot be used as a POJO type and must be processed as GenericType. Please read the Flink documentation on "Data Types & Serialization" for details of the effect on performance.
+     * Exception in thread "main" org.apache.flink.api.common.InvalidProgramException: This type (GenericType<DataStreamWithFieldExpressions.WordCount>) cannot be used as key.
      * 	at org.apache.flink.api.common.operators.Keys$ExpressionKeys.<init>(Keys.java:330)
      * 	at org.apache.flink.streaming.api.datastream.DataStream.keyBy(DataStream.java:337)
-     * 	at org.ximo.finkinaction.java.basicapiconcepts.DataStreamWithFieldExpressions.main(DataStreamWithFieldExpressions.java:42)
+     * 	at DataStreamWithFieldExpressions.main(DataStreamWithFieldExpressions.java:42)
      *
      */
     @Data

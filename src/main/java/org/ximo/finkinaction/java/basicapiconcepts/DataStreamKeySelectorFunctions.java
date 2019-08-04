@@ -45,12 +45,12 @@ public class DataStreamKeySelectorFunctions {
 
 
     /**
-     * 15:44:53,352 INFO  org.apache.flink.api.java.typeutils.TypeExtractor             - Class org.ximo.finkinaction.java.basicapiconcepts.DataStreamKeySelectorFunctions$WordCount is not public so it cannot be used as a POJO type and must be processed as GenericType. Please read the Flink documentation on "Data Types & Serialization" for details of the effect on performance.
-     * Exception in thread "main" org.apache.flink.api.common.typeutils.CompositeType$InvalidFieldReferenceException: Cannot reference field by field expression on GenericType<org.ximo.finkinaction.java.basicapiconcepts.DataStreamKeySelectorFunctions.WordCount>Field expressions are only supported on POJO types, tuples, and case classes. (See the Flink documentation on what is considered a POJO.)
+     * 15:44:53,352 INFO  org.apache.flink.api.java.typeutils.TypeExtractor             - Class DataStreamKeySelectorFunctions$WordCount is not public so it cannot be used as a POJO type and must be processed as GenericType. Please read the Flink documentation on "Data Types & Serialization" for details of the effect on performance.
+     * Exception in thread "main" org.apache.flink.api.common.typeutils.CompositeType$InvalidFieldReferenceException: Cannot reference field by field expression on GenericType<DataStreamKeySelectorFunctions.WordCount>Field expressions are only supported on POJO types, tuples, and case classes. (See the Flink documentation on what is considered a POJO.)
      * 	at org.apache.flink.streaming.util.typeutils.FieldAccessorFactory.getAccessor(FieldAccessorFactory.java:193)
      * 	at org.apache.flink.streaming.api.functions.aggregation.SumAggregator.<init>(SumAggregator.java:55)
      * 	at org.apache.flink.streaming.api.datastream.WindowedStream.sum(WindowedStream.java:1367)
-     * 	at org.ximo.finkinaction.java.basicapiconcepts.DataStreamKeySelectorFunctions.main(DataStreamKeySelectorFunctions.java:30)
+     * 	at DataStreamKeySelectorFunctions.main(DataStreamKeySelectorFunctions.java:30)
      * 	如果不是public的 他会报错
      *
      */
