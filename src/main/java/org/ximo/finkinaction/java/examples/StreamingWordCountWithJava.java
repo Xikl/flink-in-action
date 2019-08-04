@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
@@ -16,10 +17,30 @@ import java.util.Arrays;
  */
 public class StreamingWordCountWithJava {
 
+    /**
+     * Returns {@link ParameterTool} for the given arguments. The arguments are keys followed by values.
+     * Keys have to start with '-' or '--'
+     *
+     * <p><strong>Example arguments:</strong>
+     * --key1 value1 --key2 value2 -key3 value3
+     *
+     * @param args Input array arguments
+     * @return A {@link ParameterTool}
+     */
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        // 可以根据
+        int port;
+        try {
+            // idea运行 中 添加 --port 9999 or -port 9999
+            final ParameterTool parameterTool = ParameterTool.fromArgs(args);
+            port = parameterTool.getInt("port");
+        } catch (Exception e) {
+            port = 9999;
+            System.err.println("使用默认端口： 9999");
+        }
 
-        env.socketTextStream("localhost", 9999)
+        env.socketTextStream("localhost", port)
                 .flatMap(getStringTuple2FlatMapFunction())
                 .returns(Types.TUPLE(Types.STRING, Types.INT))
                 .keyBy(0)
