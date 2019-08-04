@@ -34,6 +34,14 @@ public static void main(String[] args) throws Exception {
 }
 ```
 ## StreamingJob
+官网给出的例子 利用控制台进行socket输入
+```jshelllanguage
+nc -lk 9999
+```
+windows下需要下载 [netcat](https://eternallybored.org/misc/netcat/),然后输入
+```jshelllanguage
+nc -l -p 9999
+```
 ```java
 public static void main(String[] args) throws Exception {
     // set up the streaming execution environment
