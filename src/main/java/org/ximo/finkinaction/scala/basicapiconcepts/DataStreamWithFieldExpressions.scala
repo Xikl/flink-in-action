@@ -5,7 +5,7 @@ import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.api.scala._
 
 /**
-  *
+  * java中tuple KeyBy("f0") 他是从0开始的 scala 则是 _1 从1开始这里要注意一下
   *
   * @author xikl
   * @date 2019/8/4

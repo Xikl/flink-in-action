@@ -21,6 +21,15 @@ public class DataStreamWithFieldExpressions {
     /**
      * 这里我觉得有点弱
      * 它不支持java8的方法引用
+     * java中tuple KeyBy("f0") 他是从0开始的 scala 则是 _1 从1开始这里要注意一下
+     * 多个对象可以用
+     * "count": The count field in the WC class.
+     *
+     * "complex": Recursively selects all fields of the field complex of POJO type ComplexNestedClass.
+     *
+     * "complex.word.f2": Selects the last field of the nested Tuple3.
+     *
+     * "complex.hadoopCitizen": Selects the Hadoop IntWritable type.
      *
      * @param args
      */
