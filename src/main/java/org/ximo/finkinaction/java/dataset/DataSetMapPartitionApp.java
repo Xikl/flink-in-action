@@ -15,7 +15,7 @@ import static java.util.stream.Collectors.toList;
  * @author xikl
  * @date 2019/8/4
  */
-public class DataSetTransformApp {
+public class DataSetMapPartitionApp {
 
     public static void main(String[] args) throws Exception {
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
