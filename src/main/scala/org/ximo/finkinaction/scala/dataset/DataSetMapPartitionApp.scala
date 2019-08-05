@@ -1,5 +1,7 @@
 package org.ximo.finkinaction.scala.dataset
 
+import java.lang
+
 import org.apache.flink.api.common.functions.MapPartitionFunction
 import org.apache.flink.api.scala.{ExecutionEnvironment, _}
 import org.apache.flink.util.Collector
@@ -14,8 +16,9 @@ object DataSetMapPartitionApp {
 
   def main(args: Array[String]): Unit = {
     val env = ExecutionEnvironment.getExecutionEnvironment
-//    mapPartition1(env)
-    mapPartition2(env)
+    //    mapPartition1(env)
+    //    mapPartition2(env)
+    mapPartition3(env)
   }
 
 
@@ -39,17 +42,23 @@ object DataSetMapPartitionApp {
   }
 
   def mapPartition3(env: ExecutionEnvironment): Unit = {
-    val partitionMapper: MapPartitionFunction[Int, Int] = (values: Iterator[Int], collector: Collector[Int]) => {
-      var c = 0
-      for (s <- values) {
-        c += 1
+    val partitionMapper = new MapPartitionFunction[Int, Int] {
+      override def mapPartition(values: lang.Iterable[Int], out: Collector[Int]): Unit = {
+        var c = 0
+        values.forEach(_ => c += 1)
+        out.collect(c)
       }
-      collector.collect(c)
+    }
+
+    val partitionMapper2: MapPartitionFunction[Int, Int] = (values, out) => {
+      var c = 0
+      values.forEach(_ => c += 1)
+      out.collect(c)
     }
 
     env.fromCollection(1 to 100)
       .setParallelism(3)
-      .mapPartition(partitionMapper)
+      .mapPartition(partitionMapper2)
       .print()
   }
 
