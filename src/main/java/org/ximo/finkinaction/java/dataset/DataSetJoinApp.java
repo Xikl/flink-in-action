@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.flink.api.common.typeinfo.Types;
+import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.DataSource;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.util.Collector;
-import scala.Int;
+import org.ximo.finkinaction.java.constants.CommonData;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -62,6 +64,22 @@ public class DataSetJoinApp {
                 })
                 .returns(Types.TUPLE(Types.INT, Types.STRING, Types.STRING))
                 .print();
+
+        System.out.println("关联Projection（仅限Java / Python）------------");
+        DataSet<Tuple3<Integer, String, String>> input1 = env.fromCollection(CommonData.TUPLE3_LIST);
+
+        DataSet<Tuple2<Integer, String>> input2 = env.fromCollection(CommonData.TUPLE2_LIST);
+
+        // 对元组的快速选择 with
+        input1.join(input2)
+                // key definition on first DataSet using a field position key
+                .where(0)
+                // key definition of second DataSet using a field position key
+                .equalTo(0)
+                // select and reorder fields of matching tuples
+                .projectFirst(0,2).projectSecond(1).projectFirst(1)
+                .print();
+
     }
 
     @NoArgsConstructor
