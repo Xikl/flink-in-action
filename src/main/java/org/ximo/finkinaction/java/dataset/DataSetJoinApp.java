@@ -3,6 +3,8 @@ package org.ximo.finkinaction.java.dataset;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.flink.api.common.functions.JoinFunction;
+import org.apache.flink.api.common.operators.base.JoinOperatorBase;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
@@ -79,6 +81,29 @@ public class DataSetJoinApp {
                 // select and reorder fields of matching tuples
                 .projectFirst(0,2).projectSecond(1).projectFirst(1)
                 .print();
+
+        // 提供多种选择
+//        input1.joinWithHuge(input2)
+
+//        input2.joinWithTiny(input1)
+
+//        input1.join(input2, JoinOperatorBase.JoinHint.BROADCAST_HASH_FIRST)
+
+        //  rightJoin FullJoin也是一样的道理
+        input1.leftOuterJoin(input2)
+                .where(0)
+                .equalTo(0)
+                .with(new JoinFunction<Tuple3<Integer, String, String>, Tuple2<Integer, String>, Tuple3<Integer, String, String>>() {
+                    @Override
+                    public Tuple3<Integer, String, String> join(Tuple3<Integer, String, String> first, Tuple2<Integer, String> second) throws Exception {
+                        if (second == null) {
+                            return new Tuple3<>(first.f0, first.f1, null);
+                        }
+                        return new Tuple3<>(first.f0, first.f1, second.f1);
+                    }
+                })
+                .print();
+
 
     }
 
