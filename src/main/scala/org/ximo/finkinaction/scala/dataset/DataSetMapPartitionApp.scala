@@ -17,8 +17,8 @@ object DataSetMapPartitionApp {
   def main(args: Array[String]): Unit = {
     val env = ExecutionEnvironment.getExecutionEnvironment
     //    mapPartition1(env)
-    //    mapPartition2(env)
-    mapPartition3(env)
+        mapPartition2(env)
+//    mapPartition3(env)
   }
 
 
@@ -34,6 +34,14 @@ object DataSetMapPartitionApp {
       }).print()
   }
 
+  /**
+    * 34
+    * 33
+    * 33
+    * 分组 并行去弄
+    *
+    * @param env
+    */
   def mapPartition2(env: ExecutionEnvironment): Unit = {
     env.fromCollection(1 to 100)
       .setParallelism(3)
