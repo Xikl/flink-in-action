@@ -59,11 +59,13 @@ object DataSetPartitionApp {
 
     println(")_________")
     data
-      .partitionByRange(0)
+      .partitionByHash(0)
       .mapPartition(res => {
-        println(res.length)
+        println("_____________________________________" + Thread.currentThread().getId)
+        println(res)
         res
       })
+//      .setParallelism(3)
       .print()
   }
 
