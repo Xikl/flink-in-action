@@ -40,15 +40,26 @@ object DataSetPartitionApp {
       * 分为三组数据
       */
     data
-        .setParallelism(3)
       .mapPartition(res => List(res.length)).print()
 
+    /**
+      * (1,java,100)
+      * (1,scala,4)
+      * (1,hadoop,3)
+      * (2,python,1002)
+      * (2,vue,200)
+      * (3,flutter,90)
+      * (4,flink,89)
+      *
+      */
     data
       .sortPartition(0, Order.ASCENDING)
+      .sortPartition(2, Order.DESCENDING)
+        .print()
 
+    println(")_________")
     data
-      .partitionByHash(0)
-      .setParallelism(4)
+      .partitionByRange(0)
       .mapPartition(res => {
         println(res.length)
         res
