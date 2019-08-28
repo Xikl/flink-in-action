@@ -26,9 +26,6 @@ object ExampleRichParallelSource extends RichParallelSourceFunction[Long]{
       ctx.collect(count)
       count += 1
       // 取消
-      if (count > 4) {
-        cancel()
-      }
       TimeUnit.SECONDS.sleep(2)
     }
 
@@ -51,5 +48,10 @@ object ExampleRichParallelSource extends RichParallelSourceFunction[Long]{
     data.print()
 
     env.execute()
+
+    TimeUnit.SECONDS.sleep(8)
+
+    // 也可以取消 线程 可见性
+    source.cancel()
   }
 }
