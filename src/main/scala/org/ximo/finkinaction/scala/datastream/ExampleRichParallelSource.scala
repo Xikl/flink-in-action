@@ -1,6 +1,6 @@
 package org.ximo.finkinaction.scala.datastream
 
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.{CompletableFuture, TimeUnit}
 
 import org.apache.flink.api.scala._
 import org.apache.flink.configuration.Configuration
@@ -49,6 +49,7 @@ object ExampleRichParallelSource extends RichParallelSourceFunction[Long]{
 
     env.execute()
 
+    // 到不了的 这里 需要用多线程改一下
     TimeUnit.SECONDS.sleep(8)
 
     // 也可以取消 线程 可见性
