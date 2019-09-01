@@ -1,8 +1,6 @@
 package org.ximo.finkinaction.scala.datastream
 
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
-import org.apache.flink.api.scala._
-import org.apache.flink.streaming.api.windowing.time.Time
 
 /**
   *

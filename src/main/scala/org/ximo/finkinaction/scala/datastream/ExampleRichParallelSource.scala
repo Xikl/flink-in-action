@@ -8,7 +8,7 @@ import org.apache.flink.streaming.api.functions.source.{RichParallelSourceFuncti
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 
 /**
-  *
+  *无论是java还是flink在执行env.execute 之后的代码除非自己结束，否则都不可到达
   *
   * @author xikl
   * @date 2019/8/29
@@ -42,7 +42,7 @@ object ExampleRichParallelSource extends RichParallelSourceFunction[Long]{
   def main(args: Array[String]): Unit = {
 
     val env = StreamExecutionEnvironment.getExecutionEnvironment
-    val source = ExampleParallelSource
+    val source = ExampleRichParallelSource
     val data = env.addSource(source).setParallelism(3)
 
     data.print()
