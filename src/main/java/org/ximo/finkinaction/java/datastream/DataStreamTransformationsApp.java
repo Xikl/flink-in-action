@@ -23,6 +23,10 @@ public class DataStreamTransformationsApp {
                 .print()
                 .setParallelism(1);
 
+        // union
+        env.fromElements(1, 2).union(env.fromElements(3, 4))
+                .print();
+
         env.execute();
 
     }

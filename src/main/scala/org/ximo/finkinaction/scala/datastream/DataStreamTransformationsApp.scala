@@ -19,6 +19,13 @@ object DataStreamTransformationsApp extends App {
 
   data.map(_ * 2).filter(_ % 2 == 0).print().setParallelism(1)
 
+  // union
+  val data2 = env.fromCollection(11 to 20)
+
+
+  println("----------------")
+  data.union(data2).print().setParallelism(1)
+
   env.execute()
 
 }
