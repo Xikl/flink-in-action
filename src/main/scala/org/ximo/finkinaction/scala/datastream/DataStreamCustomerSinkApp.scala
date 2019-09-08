@@ -55,6 +55,9 @@ class SinkToMysql extends RichSinkFunction[Student] {
     connection = getConnection
     val sql = "insert into t_student(name, age) values(?, ?)"
     pstmt = connection.prepareStatement(sql)
+
+    // 8核12线程 会打印12个open 并行度
+    println("open")
   }
 
   override def invoke(student: Student, context: SinkFunction.Context[_]): Unit = {
