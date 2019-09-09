@@ -2,7 +2,7 @@ package org.ximo.finkinaction.java.constants;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
-import scala.Int;
+import org.ximo.finkinaction.java.Person;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -30,5 +30,15 @@ public class CommonData {
                 new Tuple2<>(2, "你好21"),
                 new Tuple2<>(3, "你好31")
             ).collect(toList());
+
+
+    public static List<Person> PERSONA_LIST = Stream.of(
+        new Person("aaa", 22),
+        new Person("bbb", 44),
+        new Person("ccc", 22),
+        new Person("ddd", 4),
+        new Person("eee", 3)
+    ).collect(toList());
+
 
 }
