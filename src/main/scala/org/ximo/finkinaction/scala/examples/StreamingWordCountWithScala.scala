@@ -19,6 +19,7 @@ object StreamingWordCountWithScala {
     val counts = text.flatMap { _.toLowerCase.split(",") filter { _.nonEmpty } }
       .map { (_, 1) }
       .keyBy(0)
+      // countWindow
       .timeWindow(Time.seconds(5))
       .sum(1)
       .setParallelism(1)
