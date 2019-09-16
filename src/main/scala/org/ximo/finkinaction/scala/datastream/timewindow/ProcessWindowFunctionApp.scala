@@ -10,7 +10,7 @@ import org.apache.flink.util.Collector
 import org.ximo.finkinaction.scala.datastream.timewindow.AggregateFunctionApp.input
 
 /**
-  *
+  * https://blog.csdn.net/lmalds/article/details/52704170 水印
   *
   * @author xikl
   * @date 2019/9/16
