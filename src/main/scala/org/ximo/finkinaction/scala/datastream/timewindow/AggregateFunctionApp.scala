@@ -1,11 +1,12 @@
 package org.ximo.finkinaction.scala.datastream.timewindow
 
-import org.apache.commons.lang3.StringUtils
 import org.apache.flink.api.common.functions.AggregateFunction
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
+import org.apache.flink.streaming.api.scala.function.ProcessWindowFunction
 import org.apache.flink.streaming.api.windowing.time.Time
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow
+import org.apache.flink.util.Collector
 
 /**
   *
@@ -13,18 +14,18 @@ import org.apache.flink.streaming.api.windowing.time.Time
   * @author xikl
   * @date 2019/9/12
   */
-object AggregateFunctionApp  extends App {
+object AggregateFunctionApp extends App {
 
   val env = StreamExecutionEnvironment.getExecutionEnvironment
   val input = env.socketTextStream("localhost", 9999)
 
-  input.flatMap(StringUtils.split(_, ",") filter(StringUtils.isNoneEmpty(_)))
-    .map((_, 1))
+  input.flatMap(_.split(",") filter (_.nonEmpty))
+    .map((_, 1L))
     .keyBy(0)
-//    .window(TumblingEventTimeWindows.of(Time.seconds(5)))
-    .timeWindow(Time.seconds(5))
-  // todo
-//    .aggregate(new AverageAggregate(), )
+    .timeWindow(Time.seconds(10), Time.seconds(5))
+    .aggregate(new AverageAggregate())
+    .print()
+    .setParallelism(1)
 
 
   env.execute()
@@ -46,4 +47,13 @@ object AggregateFunctionApp  extends App {
       (a._1 + b._1, a._2 + b._2)
     }
   }
+
+  class MyProcessWindowFunction extends ProcessWindowFunction[Double, (String, Double), String, TimeWindow] {
+    override def process(key: String, context: Context, elements: Iterable[Double], out: Collector[(String, Double)]): Unit = {
+      val average = elements.iterator.next()
+      out.collect((key, average))
+    }
+  }
+
+
 }
