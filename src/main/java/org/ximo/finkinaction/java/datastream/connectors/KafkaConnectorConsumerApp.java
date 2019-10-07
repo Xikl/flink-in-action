@@ -26,6 +26,7 @@ public class KafkaConnectorConsumerApp {
                 new FlinkKafkaConsumer<>(topic, new SimpleStringSchema(), properties);
 
         final DataStreamSource<String> stringDataStreamSource = env.addSource(flinkKafkaConsumer);
+        stringDataStreamSource.print();
         env.execute("KafkaConnectorConsumerApp-Java");
 
     }
