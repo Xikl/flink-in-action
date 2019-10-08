@@ -8,6 +8,10 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import java.util.Properties;
 
 /**
+ * 连接阿里云的kafka解决
+ * host.name=阿里云内网地址      #kafka绑定的interface
+ * advertised.listeners=PLAINTEXT://阿里云外网映射地址:9092
+ *
  * @author xikl
  * @date 2019/10/7
  */
@@ -17,8 +21,7 @@ public class KafkaConnectorConsumerApp {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         Properties properties = new Properties();
-        // todo 改为阿里云的ip
-        properties.setProperty("bootstrap.servers", "localhost:9092");
+        properties.setProperty("bootstrap.servers", "47.98.200.49:9092");
         properties.setProperty("group.id", "test");
 
         String topic = "test";
