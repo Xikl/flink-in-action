@@ -12,6 +12,8 @@ import java.util.Properties;
  * host.name=阿里云内网地址      #kafka绑定的interface
  * advertised.listeners=PLAINTEXT://阿里云外网映射地址:9092
  *
+ * https://ci.apache.org/projects/flink/flink-docs-release-1.8/dev/connectors/kafka.html#kafka-consumers-start-position-configuration
+ *
  * @author xikl
  * @date 2019/10/7
  */
@@ -27,6 +29,9 @@ public class KafkaConnectorConsumerApp {
         String topic = "test";
         FlinkKafkaConsumer<String> flinkKafkaConsumer =
                 new FlinkKafkaConsumer<>(topic, new SimpleStringSchema(), properties);
+
+        // 默认行为
+        flinkKafkaConsumer.setStartFromGroupOffsets();
 
         final DataStreamSource<String> stringDataStreamSource = env.addSource(flinkKafkaConsumer);
         stringDataStreamSource.print();

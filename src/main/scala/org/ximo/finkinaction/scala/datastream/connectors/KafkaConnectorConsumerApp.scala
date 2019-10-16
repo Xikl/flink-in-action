@@ -9,7 +9,7 @@ import org.apache.flink.api.scala._
 
 /**
   *
-  *
+  * https://ci.apache.org/projects/flink/flink-docs-release-1.8/dev/connectors/kafka.html#kafka-consumers-start-position-configuration
   * @author xikl
   * @date 2019/10/9
   */
@@ -24,6 +24,8 @@ object KafkaConnectorConsumerApp extends App {
   val topic = "test"
 
   val flinkKafkaConsumer = new FlinkKafkaConsumer[String](topic, new SimpleStringSchema(), properties)
+
+  flinkKafkaConsumer.setStartFromGroupOffsets()
 
   val value: DataStream[String] = env.addSource(flinkKafkaConsumer)
   value.print()
