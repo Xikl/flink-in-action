@@ -2,6 +2,7 @@ package org.ximo.finkinaction.scala.examples
 
 import org.apache.flink.api.scala.ExecutionEnvironment
 import org.apache.flink.api.scala._
+import org.apache.flink.api.scala.extensions._
 
 /**
   *
@@ -23,6 +24,8 @@ object BatchWordCountWithScala {
       .sum(1)
       .print()
 
+    // import org.apache.flink.api.scala.extensions._ 需要import这个东西
+    // scala 高级用法 mapWith 、 xxxWith 、 keyingBy等操作
   }
 
 }
