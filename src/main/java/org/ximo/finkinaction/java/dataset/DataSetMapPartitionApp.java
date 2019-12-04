@@ -28,6 +28,7 @@ public class DataSetMapPartitionApp {
         //34
         //33
         //33
+        // 思考 一般这种并行操作的，都将去分割数据，那么我觉得上方操作流下来的数据最好应该是可以支持随机访问的已达到最大的性能！
         env.fromCollection(data)
                 .setParallelism(3)
                 .mapPartition(new PartitionCounter())
