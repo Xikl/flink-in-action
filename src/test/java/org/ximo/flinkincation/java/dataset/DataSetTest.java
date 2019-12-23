@@ -5,9 +5,11 @@ import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.operators.DeltaIteration;
 import org.apache.flink.api.java.operators.IterativeDataSet;
 import org.apache.flink.api.java.operators.MapOperator;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.utils.DataSetUtils;
 import org.apache.flink.util.Collector;
 import org.junit.Test;
 
@@ -97,5 +99,59 @@ public class DataSetTest {
         initial.closeWith(iteration)
                 .print();
 
+    }
+
+    @Test
+    public void test() {
+        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        // read the initial data sets
+        DataSet<Tuple2<Long, Double>> initialSolutionSet = env.fromElements(new Tuple2<>(1L, 1.2));
+
+        DataSet<Tuple2<Long, Double>> initialDeltaSet = env.fromElements(new Tuple2<>(1L, 2.2));
+
+        int maxIterations = 100;
+        int keyPosition = 0;
+
+        DeltaIteration<Tuple2<Long, Double>, Tuple2<Long, Double>> iteration = initialSolutionSet
+                .iterateDelta(initialDeltaSet, maxIterations, keyPosition);
+
+//        DataSet<Tuple2<Long, Double>> candidateUpdates = iteration.getWorkset()
+//                .groupBy(1)
+//                .reduceGroup(new ComputeCandidateChanges());
+//
+//        DataSet<Tuple2<Long, Double>> deltas = candidateUpdates
+//                .join(iteration.getSolutionSet())
+//                .where(0)
+//                .equalTo(0)
+//                .with(new CompareChangesToCurrent());
+//
+//        DataSet<Tuple2<Long, Double>> nextWorkset = deltas
+//                .filter(new FilterByThreshold());
+//
+//        iteration.closeWith(deltas, nextWorkset)
+//                .writeAsCsv(outputPath);
+    }
+
+    @Test
+    public void testZipWithIndex() throws Exception {
+        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(2);
+        DataSet<String> in = env.fromElements("A", "B", "C", "D", "E", "F", "G", "H");
+
+        // zip 操作
+        DataSet<Tuple2<Long, String>> result = DataSetUtils.zipWithIndex(in);
+
+        result.print();
+    }
+
+    @Test
+    public void testZipWithUniqueId() throws Exception {
+        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(2);
+        DataSet<String> in = env.fromElements("A", "B", "C", "D", "E", "F", "G", "H");
+
+        DataSet<Tuple2<Long, String>> result = DataSetUtils.zipWithUniqueId(in);
+        result.print();
     }
 }
