@@ -2,12 +2,15 @@ package org.ximo.flinkincation.java.dataset;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.functions.CoGroupFunction;
+import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.IterativeStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.ProcessingTimeSessionWindows;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
@@ -91,6 +94,25 @@ public class DataStreamTest {
                     }
                     // todo.assignTimestampsAndWatermarks()
                 });
+
+        env.execute();
+    }
+
+    @Test
+    public void testDataStreamCloseWithIteration() throws Exception {
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        DataStream<Long> someIntegers = env.generateSequence(0, 1000);
+
+        IterativeStream<Long> iteration = someIntegers.iterate();
+
+        DataStream<Long> minusOne = iteration.map(value -> value - 1);
+
+        DataStream<Long> stillGreaterThanZero = minusOne.filter(value -> value > 0);
+
+        iteration.closeWith(stillGreaterThanZero);
+
+        iteration.print().setParallelism(1);
+//        DataStream<Long> lessThanZero = minusOne.filter(value -> value <= 0);
 
         env.execute();
     }
