@@ -24,7 +24,7 @@ public class DataStreamKeySelectorFunctions {
                 .flatMap(getStringTuple2FlatMapFunction())
                 // 这里需要替换为class
                 .returns(WordCount.class)
-                .keyBy((KeySelector<WordCount, String>) wc -> wc.word)
+                .keyBy(wc -> wc.word)
                 .timeWindow(Time.seconds(5))
                 .sum("count")
                 // 设置并发数

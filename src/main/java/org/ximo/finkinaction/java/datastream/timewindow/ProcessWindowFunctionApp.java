@@ -2,13 +2,13 @@ package org.ximo.finkinaction.java.datastream.timewindow;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
-import scala.Tuple2;
 
 import java.util.Arrays;
 
@@ -28,7 +28,7 @@ public class ProcessWindowFunctionApp {
         input.flatMap(toTuple2())
                 // 该key参数是通过KeySelector为keyBy()调用指定的密钥提取的密钥。在元组索引键或字符串字段引用的情况下，
                 // 此键类型始终是Tuple，您必须手动将其转换为正确大小的元组以提取键字段。
-                .keyBy(t -> t._1)
+                .keyBy(t -> t.f0)
                 .timeWindow(Time.seconds(10), Time.seconds(5))
                 .process(new CountWindowFunction())
                 .print()

@@ -85,3 +85,5 @@ REPARTITION_HASH_SECOND：系统分区（shuffle）每个输入（除非输入�
 
 REPARTITION_SORT_MERGE：系统对每个输入进行分区（shuffle）（除非输入已经分区）并对每个输入进行排序（除非它已经排序）。输入通过已排序输入的流合并来连接。如果已经对一个或两个输入进行了排序，则此策略很好。
 ```
+## `java` 中的 `keyBy` 操作
+尽量使用 .keyBy(t -> t.f0) 而不是 keyBy(0) 这个返回的是 Tuple

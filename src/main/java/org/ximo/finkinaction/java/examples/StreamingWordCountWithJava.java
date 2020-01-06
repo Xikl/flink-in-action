@@ -43,7 +43,7 @@ public class StreamingWordCountWithJava {
         env.socketTextStream("localhost", port)
                 .flatMap(getStringTuple2FlatMapFunction())
                 .returns(Types.TUPLE(Types.STRING, Types.INT))
-                .keyBy(0)
+                .keyBy(t -> t.f0)
                 .timeWindow(Time.seconds(5))
                 .sum(1)
                 // 设置并发数

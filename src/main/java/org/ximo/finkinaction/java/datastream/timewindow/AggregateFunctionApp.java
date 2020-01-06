@@ -3,11 +3,13 @@ package org.ximo.finkinaction.java.datastream.timewindow;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import scala.Tuple2;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.util.Collector;
 
 import java.util.Arrays;
 
@@ -23,9 +25,11 @@ public class AggregateFunctionApp {
 
         final DataStreamSource<String> input = environment.socketTextStream("localhost", 9999);
         input.flatMap(toTuple2())
-                .keyBy(0)
+                .keyBy(t -> t.f0)
                 .timeWindow(Time.seconds(10), Time.seconds(5))
-                .aggregate(new AverageAggregate())
+//                .aggregate(new AverageAggregate())
+                // 增量聚和 注意这里的 keyBy
+                .aggregate(new AverageAggregate(), new MyProcessWindowFunction())
                 .print()
                 .setParallelism(1);
 
@@ -46,26 +50,37 @@ public class AggregateFunctionApp {
      */
     private static class AverageAggregate
             implements AggregateFunction<Tuple2<String, Long>, Tuple2<Long, Long>, Double> {
-        // 创建一个初始值
         @Override
         public Tuple2<Long, Long> createAccumulator() {
             return new Tuple2<>(0L, 0L);
         }
 
         @Override
-        public Tuple2<Long, Long> add(Tuple2<String, Long> value,
-                                      Tuple2<Long, Long> accumulator) {
-            return new Tuple2<>(value._2 + accumulator._1, accumulator._2 + 1L);
+        public Tuple2<Long, Long> add(Tuple2<String, Long> value, Tuple2<Long, Long> accumulator) {
+            return new Tuple2<>(accumulator.f0 + value.f1, accumulator.f1 + 1L);
         }
 
         @Override
         public Double getResult(Tuple2<Long, Long> accumulator) {
-            return ((double) accumulator._1) / accumulator._2;
+            return ((double) accumulator.f0) / accumulator.f1;
         }
 
         @Override
         public Tuple2<Long, Long> merge(Tuple2<Long, Long> a, Tuple2<Long, Long> b) {
-            return new Tuple2<>(a._1 + b._1, a._2 / b._2);
+            return new Tuple2<>(a.f0 + b.f0, a.f1 + b.f1);
+        }
+    }
+
+    private static class MyProcessWindowFunction
+            extends ProcessWindowFunction<Double, Tuple2<String, Double>, String, TimeWindow> {
+
+        @Override
+        public void process(String key,
+                            Context context,
+                            Iterable<Double> averages,
+                            Collector<Tuple2<String, Double>> out) {
+            Double average = averages.iterator().next();
+            out.collect(new Tuple2<>(key, average));
         }
     }
 

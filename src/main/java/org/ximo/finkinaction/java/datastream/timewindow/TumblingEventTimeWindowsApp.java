@@ -25,7 +25,7 @@ public class TumblingEventTimeWindowsApp {
 
         input.flatMap(getStringTuple2FlatMapFunction())
                 .returns(Types.TUPLE(Types.STRING, Types.INT))
-                .keyBy(0)
+                .keyBy(t -> t.f0)
                 // 默认按照处理时间processing 这是它的简写
 //                .timeWindow(Time.seconds(5))
                 .window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
