@@ -3,12 +3,16 @@ package org.ximo.flinkincation.java.dataset;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.functions.CoGroupFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.state.ValueState;
+import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.IterativeStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -22,7 +26,6 @@ import org.junit.Test;
 public class DataStreamTest {
 
     /**
-     *
      * @throws Exception
      * @see StreamExecutionEnvironment#generateSequence(long, long)
      * @see StreamExecutionEnvironment#readTextFile(String)
@@ -49,7 +52,7 @@ public class DataStreamTest {
     public static class Splitter implements FlatMapFunction<String, Tuple2<String, Integer>> {
         @Override
         public void flatMap(String sentence, Collector<Tuple2<String, Integer>> out) {
-            for (String word: sentence.split(" ")) {
+            for (String word : sentence.split(" ")) {
                 out.collect(new Tuple2<>(word, 1));
             }
         }
@@ -132,5 +135,77 @@ public class DataStreamTest {
                 .sum(1)
                 .print()
                 .setParallelism(1);
+    }
+
+    @Test
+    public void testDataStreamOnTimer() throws Exception {
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.generateSequence(1, 1000)
+                .map(index -> new Tuple2<>("str" + index, 1))
+                .returns(Types.TUPLE(Types.STRING, Types.INT))
+                .keyBy(t -> t.f0)
+                .process(new CountWithTimeoutFunction());
+
+        env.execute();
+    }
+
+    public class CountWithTimestamp {
+
+        public String key;
+        public Integer count;
+        public long lastModified;
+    }
+
+    /**
+     * Low-level Operations
+     * @link https://ci.apache.org/projects/flink/flink-docs-release-1.9/dev/stream/operators/process_function.html
+     */
+    public class CountWithTimeoutFunction
+        extends KeyedProcessFunction<String, Tuple2<String, Integer>, Tuple2<String, Integer>> {
+
+        private ValueState<CountWithTimestamp> state;
+
+        @Override
+        public void open(Configuration parameters) throws Exception {
+            state = getRuntimeContext()
+                    .getState(new ValueStateDescriptor<>("myState", CountWithTimestamp.class));
+        }
+
+        @Override
+        public void processElement(Tuple2<String, Integer> value,
+                                   Context ctx,
+                                   Collector<Tuple2<String, Integer>> out) throws Exception {
+            CountWithTimestamp current = state.value();
+            if (current == null) {
+                current = new CountWithTimestamp();
+                current.key = value.f0;
+            }
+
+            current.count++;
+            //
+            current.lastModified = ctx.timestamp();
+
+            state.update(current);
+            ctx.timerService().registerEventTimeTimer(current.lastModified + 60000);
+        }
+
+        /**
+         * 回调函数
+         *
+         * @param timestamp
+         * @param ctx
+         * @param out
+         * @throws Exception
+         */
+        @Override
+        public void onTimer(long timestamp,
+                            OnTimerContext ctx,
+                            Collector<Tuple2<String, Integer>> out) throws Exception {
+            final CountWithTimestamp result = state.value();
+            // 时间匹配才去做
+            if (timestamp == result.lastModified + 60000) {
+                out.collect(new Tuple2<>(result.key, result.count));
+            }
+        }
     }
 }

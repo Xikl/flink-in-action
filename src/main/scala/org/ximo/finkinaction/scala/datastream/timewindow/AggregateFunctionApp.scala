@@ -21,9 +21,9 @@ object AggregateFunctionApp extends App {
 
   input.flatMap(_.split(",") filter (_.nonEmpty))
     .map((_, 1L))
-    .keyBy(0)
+    .keyBy(_._1)
     .timeWindow(Time.seconds(10), Time.seconds(5))
-    .aggregate(new AverageAggregate())
+    .aggregate(new AverageAggregate(), new MyProcessWindowFunction)
     .print()
     .setParallelism(1)
 
