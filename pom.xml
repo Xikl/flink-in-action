@@ -30,7 +30,8 @@ under the License.
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<flink.version>1.16.1</flink.version>
+		<!--固定住该版本，15版本需要java11-->
+		<flink.version>1.14.6</flink.version>
 		<java.version>1.8</java.version>
 		<scala.version>2.12.7</scala.version>
 		<scala.binary.version>2.12</scala.binary.version>
